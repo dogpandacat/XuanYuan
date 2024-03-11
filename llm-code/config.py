@@ -23,8 +23,8 @@ def parse_arguments():
     parser.add_argument("--per_device_train_batch_size", type=int, default=16, help="Batch size")
     parser.add_argument("--max_length", type=int, default=1024, help="最大长度")
     parser.add_argument('--gradient_checkpointing', action='store_true', help='是否开启梯度检查点，默认不开启。开启可节省GPU内存占用')
-    parser.add_argument("--log_steps", type=int, default=10, help="每隔多少步记录一次日志")
-    parser.add_argument("--save_steps", type=int, default=-1, help="每隔多少步保存一次模型")
+    parser.add_argument("--log_steps", type=int, default=10, help="每训练多少个batch的样本，就记录一次日志")
+    parser.add_argument("--save_steps", type=int, default=-1, help="每训练多少个bantch的样本，就保存一次模型")
 
     # deepspeed相关参数
     parser.add_argument('--ds_offload_cpu', action='store_true', help='是否开启cpu offload')

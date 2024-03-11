@@ -106,7 +106,7 @@ def save_hf_format(model, tokenizer, args, sub_folder=""):
 def main():
     # 解析命令行参数
     args = parse_args()
-    if args.local_rank == 0:
+    if args.local_rank == 0:    # 多机多卡情况下的local_rank
         # 创建保存模型的文件夹
         os.makedirs(args.save_name, exist_ok=True)
 
@@ -119,6 +119,8 @@ def main():
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         print(f'local_rank={args.local_rank} device={device}')
+
+        # 核心的一行代码，初始化deepspeed分布式环境
         deepspeed.init_distributed()
         args.global_rank = dist.get_rank()
         print(f"global rank：{args.global_rank}  local rank: {args.local_rank}")
@@ -153,7 +155,7 @@ def main():
             model.backward(loss)  # 反向传播
             model.step()  # deepspeed更新模型参数
 
-            # 每隔一定step打印一次日志
+            # 每隔一定step打印一次日志，意思是每训练2个batch的样本，假设一个batch的样本是10个，那么这里就是训练20个样本后输出一次日志
             if step % args.log_steps == 0:
                 time_per_step = (time.time() - tic) / args.log_steps
                 speed = args.per_device_train_batch_size * args.max_length / time_per_step
